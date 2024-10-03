@@ -1,72 +1,34 @@
 # Maintainer: Tales A. Mendonça <talesam@gmail.com>
 
-pkgname=pkgbuild-template
-pkgdesc="Package template for Communitybig"
-# Uncomment and edit the following lines as needed
-#depends=('')
-#makedepends=('')
-#optdepends=('')
-#conflicts=('')
-#provides=('')
-#replaces=('')
+pkgname=comm-shell-orchis
+pkgdesc="Orchis Shell Theme Suite for BigCommunity"
 pkgver=$(date +%y.%m.%d)
 pkgrel=$(date +%H%M)
 arch=('any')
-license=('MIT')
-url="https://github.com/communitybig/${pkgname}"
-source=("git+${url}.git")
+license=('GPL3')
+url="https://github.com/vinceliuice/Orchis-theme"
+provides=("$pkgname")
+source=("git+${url}.git#branch=master")
 md5sums=('SKIP')
 
-# Automatically detect and use the correct install file
-if [ -e "${pkgname}.install" ]; then
-    install=${pkgname}.install
-elif [ -e "pkgbuild.install" ]; then
-    install=pkgbuild.install
-fi
-
 prepare() {
-    cd "${srcdir}/${pkgname}"
-    # Add any preparation steps here, if needed
-    # For example: patch -p1 < "${srcdir}/patch-file.patch"
-}
-
-build() {
-    cd "${srcdir}/${pkgname}"
-    # Add build steps here, if needed
-    # For example: make
-}
-
-check() {
-    cd "${srcdir}/${pkgname}"
-    # Add check/test steps here, if needed
-    # For example: make check
+    cd "$srcdir/Orchis-theme"
+    ./install.sh -t all
 }
 
 package() {
-    cd "${srcdir}/${pkgname}"
+    # Destination directory
+    install -d "${pkgdir}/usr/share/themes"
 
-    # Determine the correct source directory
-    if [ -d "${pkgname}" ]; then
-        srcdir="${srcdir}/${pkgname}/${pkgname}"
-    else
-        srcdir="${srcdir}/${pkgname}"
-    fi
-
-    # Install files
-    local dirs=("usr" "etc" "opt")
-    for dir in "${dirs[@]}"; do
-        if [ -d "${srcdir}/${dir}" ]; then
-            cp -a "${srcdir}/${dir}" "${pkgdir}/"
+    # Copy only the required themes
+    for theme_dir in "$HOME/.themes"/*-Dark-Compact; do
+        theme_name=$(basename "$theme_dir")
+        if [[ "$theme_name" == "Orchis-Dark-Compact" ]]; then
+            new_theme_name="Big-Blue"
+        else
+            new_theme_name="Big-${theme_name#Orchis-}"
+            new_theme_name="${new_theme_name%-Dark-Compact}"
         fi
+        cp -r "$theme_dir" "${pkgdir}/usr/share/themes/$new_theme_name"
     done
-
-    # Install license file if present
-    if [ -f "LICENSE" ]; then
-        install -Dm644 LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
-    fi
-
-    # Install documentation if present
-    if [ -f "README.md" ]; then
-        install -Dm644 README.md "${pkgdir}/usr/share/doc/${pkgname}/README.md"
-    fi
 }
