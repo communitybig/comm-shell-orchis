@@ -20,7 +20,7 @@ package() {
     # Destination directory
     install -d "${pkgdir}/usr/share/themes"
 
-    # Copy only the required themes
+    # Copy Dark-Compact themes
     for theme_dir in "$HOME/.themes"/*-Dark-Compact; do
         theme_name=$(basename "$theme_dir")
         if [[ "$theme_name" == "Orchis-Dark-Compact" ]]; then
@@ -28,6 +28,18 @@ package() {
         else
             new_theme_name="Big-${theme_name#Orchis-}"
             new_theme_name="${new_theme_name%-Dark-Compact}"
+        fi
+        cp -r "$theme_dir" "${pkgdir}/usr/share/themes/$new_theme_name"
+    done
+
+    # Copy Light-Compact themes
+    for theme_dir in "$HOME/.themes"/*-Light-Compact; do
+        theme_name=$(basename "$theme_dir")
+        if [[ "$theme_name" == "Orchis-Light-Compact" ]]; then
+            new_theme_name="Big-Blue-Light"
+        else
+            new_theme_name="Big-${theme_name#Orchis-}"
+            new_theme_name="${new_theme_name%-Light-Compact}-Light"
         fi
         cp -r "$theme_dir" "${pkgdir}/usr/share/themes/$new_theme_name"
     done
