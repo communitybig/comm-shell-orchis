@@ -11,29 +11,21 @@ makedepends=('sassc' 'optipng')
 depends=('gtk3' 'gtk4' 'gnome-shell')
 provides=("$pkgname")
 install=pkgbuild.install
-source=("git+${url}.git#branch=master"
-        "pkgbuild.install")
-md5sums=('SKIP'
-         'SKIP')
+source=("git+${url}.git#branch=master")
+md5sums=('SKIP')
 
 prepare() {
     cd "$srcdir/Orchis-theme"
-    # Install themes in temporary directory with all required options
-    ./install.sh \
-        -d temp-themes \
-        -t all \
-        --shell \
-        --libadwaita
+    # Install themes with shell and libadwaita support
+    HOME="$srcdir" ./install.sh -t all --shell --libadwaita
 }
 
 package() {
-    cd "$srcdir/Orchis-theme"
-    
-    # Create themes directory
+    # Destination directory
     install -d "${pkgdir}/usr/share/themes"
 
-    # Copy and rename Dark-Compact themes
-    for theme_dir in ./temp-themes/*-Dark-Compact; do
+    # Copy Dark-Compact themes
+    for theme_dir in "$srcdir/.themes"/*-Dark-Compact; do
         theme_name=$(basename "$theme_dir")
         if [[ "$theme_name" == "Orchis-Dark-Compact" ]]; then
             new_theme_name="Big-Blue"
@@ -44,8 +36,8 @@ package() {
         cp -r "$theme_dir" "${pkgdir}/usr/share/themes/$new_theme_name"
     done
 
-    # Copy and rename Light-Compact themes
-    for theme_dir in ./temp-themes/*-Light-Compact; do
+    # Copy Light-Compact themes
+    for theme_dir in "$srcdir/.themes"/*-Light-Compact; do
         theme_name=$(basename "$theme_dir")
         if [[ "$theme_name" == "Orchis-Light-Compact" ]]; then
             new_theme_name="Big-Blue-Light"
