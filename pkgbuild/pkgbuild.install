@@ -1,3 +1,6 @@
+# Get the current non-root user
+CURRENT_USER=$(who | awk 'NR==1{print $1}')
+
 # Installation file for Arch Linux packages
 # This file contains scripts that are executed at different stages of package installation/upgrade/removal
 
@@ -13,30 +16,29 @@
 
 # Function executed after package installation
 post_install() {
-    # Get list of users with home directory
-    for user_home in /home/*; do
-        if [ -d "$user_home" ]; then
-            username=$(basename "$user_home")
-            
-            # Create gtk-4.0 directory if it doesn't exist
-            mkdir -p "$user_home/.config/gtk-4.0"
-            
-            # Create symbolic links for themes
-            themes=("Big-Blue" "Big-Purple" "Big-Pink" "Big-Red" "Big-Orange" "Big-Yellow" "Big-Green" "Big-Teal" "Big-Grey")
-            
-            for theme in "${themes[@]}"; do
-                if [ -d "/usr/share/themes/$theme-Light/gtk-4.0" ]; then
-                    # Remove old link if exists
-                    rm -f "$user_home/.config/gtk-4.0/$(basename "$theme")"
-                    # Create new link
-                    ln -sf "/usr/share/themes/$theme-Light/gtk-4.0" "$user_home/.config/gtk-4.0/$theme"
-                fi
-            done
-            
-            # Fix permissions
-            chown -R $username:$username "$user_home/.config/gtk-4.0"
-        fi
-    done
+    if [ -n "$CURRENT_USER" ]; then
+        user_home="/home/$CURRENT_USER"
+        
+        # Create gtk-4.0 directory if it doesn't exist
+        mkdir -p "$user_home/.config/gtk-4.0"
+        
+        # Create symbolic links for themes
+        themes=("Big-Blue" "Big-Purple" "Big-Pink" "Big-Red" "Big-Orange" "Big-Yellow" "Big-Green" "Big-Teal" "Big-Grey")
+        
+        for theme in "${themes[@]}"; do
+            if [ -d "/usr/share/themes/$theme-Light/gtk-4.0" ]; then
+                # Remove old link if exists
+                rm -f "$user_home/.config/gtk-4.0/$(basename "$theme")"
+                # Create new link
+                ln -sf "/usr/share/themes/$theme-Light/gtk-4.0" "$user_home/.config/gtk-4.0/$theme"
+            fi
+        done
+        
+        # Fix permissions
+        chown -R $CURRENT_USER:$CURRENT_USER "$user_home/.config/gtk-4.0"
+    else
+        echo "Warning: No non-root user found. Skipping user-specific configuration."
+    fi
 }
 
 # Function executed before package upgrade
@@ -53,16 +55,14 @@ post_upgrade() {
 
 # Function executed before package removal
 pre_remove() {
-    # Remove symbolic links when uninstalling
-    for user_home in /home/*; do
-        if [ -d "$user_home" ]; then
-            themes=("Big-Blue" "Big-Purple" "Big-Pink" "Big-Red" "Big-Orange" "Big-Yellow" "Big-Green" "Big-Teal" "Big-Grey")
-            
-            for theme in "${themes[@]}"; do
-                rm -f "$user_home/.config/gtk-4.0/$theme"
-            done
-        fi
-    done
+    if [ -n "$CURRENT_USER" ]; then
+        user_home="/home/$CURRENT_USER"
+        themes=("Big-Blue" "Big-Purple" "Big-Pink" "Big-Red" "Big-Orange" "Big-Yellow" "Big-Green" "Big-Teal" "Big-Grey")
+        
+        for theme in "${themes[@]}"; do
+            rm -f "$user_home/.config/gtk-4.0/$theme"
+        done
+    fi
 }
 
 # Function executed after package removal
