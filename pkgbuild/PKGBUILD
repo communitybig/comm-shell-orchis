@@ -33,7 +33,7 @@ package() {
     install -d "${pkgdir}/usr/share/themes"
 
     # Copy and rename Dark-Compact themes
-    for theme_dir in temp-themes/*-Dark-Compact; do
+    for theme_dir in ./temp-themes/*-Dark-Compact; do
         theme_name=$(basename "$theme_dir")
         if [[ "$theme_name" == "Orchis-Dark-Compact" ]]; then
             new_theme_name="Big-Blue"
@@ -45,7 +45,7 @@ package() {
     done
 
     # Copy and rename Light-Compact themes
-    for theme_dir in temp-themes/*-Light-Compact; do
+    for theme_dir in ./temp-themes/*-Light-Compact; do
         theme_name=$(basename "$theme_dir")
         if [[ "$theme_name" == "Orchis-Light-Compact" ]]; then
             new_theme_name="Big-Blue-Light"
