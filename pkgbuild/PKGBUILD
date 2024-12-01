@@ -10,9 +10,9 @@ url="https://github.com/vinceliuice/Orchis-theme"
 makedepends=('sassc' 'optipng')
 depends=('gtk3' 'gtk4' 'gnome-shell')
 provides=("$pkgname")
-install=${pkgname}.install
+install=pkgbuild.install
 source=("git+${url}.git#branch=master"
-        "${pkgname}.install")
+        "pkgbuild.install")
 md5sums=('SKIP'
          'SKIP')
 
