@@ -7,13 +7,17 @@ pkgrel=$(date +%H%M)
 arch=('any')
 license=('GPL3')
 url="https://github.com/vinceliuice/Orchis-theme"
+makedepends=('sassc' 'optipng')
+depends=('gtk3' 'gtk4' 'gnome-shell')
 provides=("$pkgname")
 source=("git+${url}.git#branch=master")
 md5sums=('SKIP')
 
 prepare() {
     cd "$srcdir/Orchis-theme"
-    ./install.sh -t all
+    # Added --shell and --libadwaita to fix color issues
+    # Kept without --tweaks solid to preserve transparency
+    ./install.sh -t all --shell --libadwaita
 }
 
 package() {
