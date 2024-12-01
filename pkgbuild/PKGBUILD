@@ -10,24 +10,28 @@ url="https://github.com/vinceliuice/Orchis-theme"
 makedepends=('sassc' 'optipng')
 depends=('gtk3' 'gtk4' 'gnome-shell')
 provides=("$pkgname")
+install=${pkgname}.install
 source=("git+${url}.git#branch=master")
 md5sums=('SKIP')
+
+prepare() {
+    cd "$srcdir/Orchis-theme"
+    # Install themes in temporary directory with all required options
+    ./install.sh \
+        -d temp-themes \
+        -t all \
+        --shell \
+        --libadwaita
+}
 
 package() {
     cd "$srcdir/Orchis-theme"
     
-    # Install directly to package directory with libadwaita support
-    ./install.sh \
-        --dest "${pkgdir}/usr/share/themes" \
-        -t all \
-        --shell \
-        --libadwaita
+    # Create themes directory
+    install -d "${pkgdir}/usr/share/themes"
 
-    # Create necessary directories for libadwaita links
-    install -dm755 "${pkgdir}/usr/share/themes/gtk-4.0"
-
-    # Rename Dark-Compact themes to Big-* standard
-    for theme_dir in "${pkgdir}/usr/share/themes"/*-Dark-Compact; do
+    # Copy and rename Dark-Compact themes
+    for theme_dir in temp-themes/*-Dark-Compact; do
         theme_name=$(basename "$theme_dir")
         if [[ "$theme_name" == "Orchis-Dark-Compact" ]]; then
             new_theme_name="Big-Blue"
@@ -35,11 +39,11 @@ package() {
             new_theme_name="Big-${theme_name#Orchis-}"
             new_theme_name="${new_theme_name%-Dark-Compact}"
         fi
-        mv "$theme_dir" "${pkgdir}/usr/share/themes/$new_theme_name"
+        cp -r "$theme_dir" "${pkgdir}/usr/share/themes/$new_theme_name"
     done
 
-    # Rename Light-Compact themes to Big-* standard
-    for theme_dir in "${pkgdir}/usr/share/themes"/*-Light-Compact; do
+    # Copy and rename Light-Compact themes
+    for theme_dir in temp-themes/*-Light-Compact; do
         theme_name=$(basename "$theme_dir")
         if [[ "$theme_name" == "Orchis-Light-Compact" ]]; then
             new_theme_name="Big-Blue-Light"
@@ -47,6 +51,6 @@ package() {
             new_theme_name="Big-${theme_name#Orchis-}"
             new_theme_name="${new_theme_name%-Light-Compact}-Light"
         fi
-        mv "$theme_dir" "${pkgdir}/usr/share/themes/$new_theme_name"
+        cp -r "$theme_dir" "${pkgdir}/usr/share/themes/$new_theme_name"
     done
 }
