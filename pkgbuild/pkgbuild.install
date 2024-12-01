@@ -19,7 +19,7 @@ post_install() {
             username=$(basename "$user_home")
             
             # Create gtk-4.0 directory if it doesn't exist
-            sudo -u "$username" mkdir -p "$user_home/.config/gtk-4.0"
+            mkdir -p "$user_home/.config/gtk-4.0"
             
             # Create symbolic links for themes
             themes=("Big-Blue" "Big-Purple" "Big-Pink" "Big-Red" "Big-Orange" "Big-Yellow" "Big-Green" "Big-Teal" "Big-Grey")
@@ -27,11 +27,14 @@ post_install() {
             for theme in "${themes[@]}"; do
                 if [ -d "/usr/share/themes/$theme-Light/gtk-4.0" ]; then
                     # Remove old link if exists
-                    sudo -u "$username" rm -f "$user_home/.config/gtk-4.0/$(basename "$theme")"
+                    rm -f "$user_home/.config/gtk-4.0/$(basename "$theme")"
                     # Create new link
-                    sudo -u "$username" ln -sf "/usr/share/themes/$theme-Light/gtk-4.0" "$user_home/.config/gtk-4.0/$theme"
+                    ln -sf "/usr/share/themes/$theme-Light/gtk-4.0" "$user_home/.config/gtk-4.0/$theme"
                 fi
             done
+            
+            # Fix permissions
+            chown -R $username:$username "$user_home/.config/gtk-4.0"
         fi
     done
 }
@@ -56,7 +59,7 @@ pre_remove() {
             themes=("Big-Blue" "Big-Purple" "Big-Pink" "Big-Red" "Big-Orange" "Big-Yellow" "Big-Green" "Big-Teal" "Big-Grey")
             
             for theme in "${themes[@]}"; do
-                sudo -u "$(basename "$user_home")" rm -f "$user_home/.config/gtk-4.0/$theme"
+                rm -f "$user_home/.config/gtk-4.0/$theme"
             done
         fi
     done
