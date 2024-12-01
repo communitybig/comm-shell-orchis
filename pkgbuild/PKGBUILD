@@ -11,8 +11,10 @@ makedepends=('sassc' 'optipng')
 depends=('gtk3' 'gtk4' 'gnome-shell')
 provides=("$pkgname")
 install=${pkgname}.install
-source=("git+${url}.git#branch=master")
-md5sums=('SKIP')
+source=("git+${url}.git#branch=master"
+        "${pkgname}.install")
+md5sums=('SKIP'
+         'SKIP')
 
 prepare() {
     cd "$srcdir/Orchis-theme"
