@@ -13,19 +13,21 @@ provides=("$pkgname")
 source=("git+${url}.git#branch=master")
 md5sums=('SKIP')
 
-prepare() {
-    cd "$srcdir/Orchis-theme"
-    # Added --shell and --libadwaita to fix color issues
-    # Kept without --tweaks solid to preserve transparency
-    ./install.sh -t all --shell --libadwaita
-}
-
 package() {
-    # Destination directory
-    install -d "${pkgdir}/usr/share/themes"
+    cd "$srcdir/Orchis-theme"
+    
+    # Install directly to package directory with libadwaita support
+    ./install.sh \
+        --dest "${pkgdir}/usr/share/themes" \
+        -t all \
+        --shell \
+        --libadwaita
 
-    # Copy Dark-Compact themes
-    for theme_dir in "$HOME/.themes"/*-Dark-Compact; do
+    # Create necessary directories for libadwaita links
+    install -dm755 "${pkgdir}/usr/share/themes/gtk-4.0"
+
+    # Rename Dark-Compact themes to Big-* standard
+    for theme_dir in "${pkgdir}/usr/share/themes"/*-Dark-Compact; do
         theme_name=$(basename "$theme_dir")
         if [[ "$theme_name" == "Orchis-Dark-Compact" ]]; then
             new_theme_name="Big-Blue"
@@ -33,11 +35,11 @@ package() {
             new_theme_name="Big-${theme_name#Orchis-}"
             new_theme_name="${new_theme_name%-Dark-Compact}"
         fi
-        cp -r "$theme_dir" "${pkgdir}/usr/share/themes/$new_theme_name"
+        mv "$theme_dir" "${pkgdir}/usr/share/themes/$new_theme_name"
     done
 
-    # Copy Light-Compact themes
-    for theme_dir in "$HOME/.themes"/*-Light-Compact; do
+    # Rename Light-Compact themes to Big-* standard
+    for theme_dir in "${pkgdir}/usr/share/themes"/*-Light-Compact; do
         theme_name=$(basename "$theme_dir")
         if [[ "$theme_name" == "Orchis-Light-Compact" ]]; then
             new_theme_name="Big-Blue-Light"
@@ -45,6 +47,6 @@ package() {
             new_theme_name="Big-${theme_name#Orchis-}"
             new_theme_name="${new_theme_name%-Light-Compact}-Light"
         fi
-        cp -r "$theme_dir" "${pkgdir}/usr/share/themes/$new_theme_name"
+        mv "$theme_dir" "${pkgdir}/usr/share/themes/$new_theme_name"
     done
 }
