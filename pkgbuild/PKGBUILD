@@ -8,7 +8,6 @@ arch=('any')
 license=('GPL3')
 url="https://github.com/vinceliuice/Orchis-theme"
 makedepends=('sassc' 'optipng')
-depends=('gtk3' 'gtk4' 'gnome-shell')
 provides=("$pkgname")
 install=pkgbuild.install
 source=("git+${url}.git#branch=master")
