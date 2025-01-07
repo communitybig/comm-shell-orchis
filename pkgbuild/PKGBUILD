@@ -16,10 +16,12 @@ md5sums=('SKIP')
 
 prepare() {
     cd "$srcdir/Orchis-theme"
+    # Install themes with shell and libadwaita support
     HOME="$srcdir" ./install.sh -t all --shell --libadwaita
 
-    # Modify all cinnamon.css files recursively
+    # Modify all cinnamon.css files in the installed themes
     echo "Modifying cinnamon.css files..."
+    cd "$srcdir/.themes"
     find . -name "cinnamon.css" -type f -exec sed -i '/\.sound-player-overlay {/,/}/ s/height: 80px;//g' {} +
 }
 
