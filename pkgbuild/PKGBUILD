@@ -2,7 +2,7 @@
 
 pkgname=comm-shell-orchis
 pkgdesc="Orchis Shell Theme Suite for BigCommunity"
-pkgver=$(date +%y.%m.%d)
+pkgver=$(date +%Y%m%d)
 pkgrel=$(date +%H%M)
 depends=('gtk3' 'gtk4')
 arch=('any')
@@ -17,7 +17,7 @@ md5sums=('SKIP')
 prepare() {
     cd "$srcdir/Orchis-theme"
     # Install themes with shell and libadwaita support
-    HOME="$srcdir" ./install.sh -t all --shell --libadwaita
+    HOME="$srcdir" ./install.sh -t all --shell --libadwaita --tweaks primary submenu dock
 
     # Modify all cinnamon.css files in the installed themes
     echo "Modifying cinnamon.css files..."
